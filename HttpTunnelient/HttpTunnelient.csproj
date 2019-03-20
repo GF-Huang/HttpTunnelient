@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;net45</TargetFrameworks>
+    <RootNamespace>HttpTunnelientDotNet</RootNamespace>
+    <Authors>GreatFireWall</Authors>
+    <Description>A http tunnel client.
+
+Supports basic authorization.</Description>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageTags>http, http proxy, tunnel, http tunnel, client</PackageTags>
+    <PackageProjectUrl>https://github.com/GreatFireWall/HttpTunnelient</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/GreatFireWall/HttpTunnelient</RepositoryUrl>
+  </PropertyGroup>
+
+</Project>
