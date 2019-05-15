@@ -15,6 +15,9 @@ namespace HttpTunnelientDotNet {
         /// </summary>
         public TcpClient TCP { get; private set; }
 
+        /// <summary>
+        /// The status of current instance.
+        /// </summary>
         public TunnelStatus Status { get; private set; } = TunnelStatus.Initial;
 
         /// <summary>
@@ -197,8 +200,11 @@ namespace HttpTunnelientDotNet {
         private void CheckResponse(string response) {
             var match = Regex.Match(response, @"HTTP/1\.(?:1|0) (\d{3}) ([\w\s]+)");
             if (match.Success) {
-                if ((HttpStatusCode)Convert.ToInt32(match.Groups[1].Value) != HttpStatusCode.OK)
-                    throw new HttpsProxyException((HttpStatusCode)Convert.ToInt32(match.Groups[1].Value), match.Groups[2].Value);
+                if ((HttpStatusCode)Convert.ToInt32(match.Groups[1].Value) != HttpStatusCode.OK) {
+                    var code = (HttpStatusCode)Convert.ToInt32(match.Groups[1].Value);
+
+                    throw new HttpsProxyException(code, $"{code:D} {match.Groups[2].Value}.");
+                }
 
             } else
                 throw new WebException("Unknown protocol responsed.", WebExceptionStatus.ServerProtocolViolation);
