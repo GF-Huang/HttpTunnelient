@@ -21,9 +21,9 @@ namespace HttpTunnelientDotNet {
         public TunnelStatus Status { get; private set; } = TunnelStatus.Initial;
 
         /// <summary>
-        /// Proxy basic authorization. Default is null.
+        /// Proxy basic authentication. Default is null.
         /// </summary>
-        public NetworkCredential ProxyAuthorization { get; set; }
+        public NetworkCredential Credential { get; set; }
 
         /// <summary>
         /// The user-agent field that used for CONNECT request. Default is null.
@@ -150,8 +150,8 @@ namespace HttpTunnelientDotNet {
                 writer.WriteLine(string.Format(MethodFieldFormat, destination, destPort));
                 writer.WriteLine(string.Format(HostFieldFormat, destination, destPort));
 
-                if (ProxyAuthorization != null) {
-                    var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ProxyAuthorization.UserName}:{ProxyAuthorization.Password}"));
+                if (Credential != null) {
+                    var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{Credential.UserName}:{Credential.Password}"));
                     writer.WriteLine(string.Format(ProxyAuthorizationFieldFormat, authorization));
                 }
 
@@ -179,8 +179,8 @@ namespace HttpTunnelientDotNet {
                 await writer.WriteLineAsync(string.Format(MethodFieldFormat, destination, destPort));
                 await writer.WriteLineAsync(string.Format(HostFieldFormat, destination, destPort));
 
-                if (ProxyAuthorization != null) {
-                    var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{ProxyAuthorization.UserName}:{ProxyAuthorization.Password}"));
+                if (Credential != null) {
+                    var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{Credential.UserName}:{Credential.Password}"));
                     await writer.WriteLineAsync(string.Format(ProxyAuthorizationFieldFormat, authorization));
                 }
 
