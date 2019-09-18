@@ -49,6 +49,7 @@ namespace HttpTunnelientDotNet {
         private string _serverHost;
         private int _serverPort;
         private IPEndPoint _serverEndPoint;
+        private bool _disposed;
         private NetworkStream _stream;
 
         public HttpTunnelient(string serverHost, int port) {
@@ -71,10 +72,14 @@ namespace HttpTunnelientDotNet {
         }
 
         public void Dispose() {
-            TCP?.Close();
-            TCP = null;
+            if (!_disposed) {
+                TCP?.Close();
+                TCP = null;
 
-            Status = TunnelStatus.Closed;
+                Status = TunnelStatus.Closed;
+
+                _disposed = true;
+            }
         }
 
         public void Connect(string destHost, int destPort) {
@@ -109,21 +114,42 @@ namespace HttpTunnelientDotNet {
             Status = TunnelStatus.Connected;
         }
 
+        public NetworkStream GetStream() {
+            if (_disposed)
+                throw new ObjectDisposedException(this.GetType().FullName);
+            if (Status != TunnelStatus.Connected)
+                throw new InvalidOperationException("HttpTunnelient not yet connceted.");
+
+            return TCP.GetStream();
+        }
+
+        #region Obsolete
+
+        private const string UseGetStreamInstead = "Use GetStream() instead to do read/write operation.";
+
+        [Obsolete(UseGetStreamInstead)]
         public void Write(byte[] buffer, int offset, int size) => _stream.Write(buffer, offset, size);
 
+        [Obsolete(UseGetStreamInstead)]
         public int Read(byte[] buffer, int offset, int size) => _stream.Read(buffer, offset, size);
 
+        [Obsolete(UseGetStreamInstead)]
         public Task WriteAsync(byte[] buffer, int offset, int count) =>
             _stream.WriteAsync(buffer, offset, count);
 
+        [Obsolete(UseGetStreamInstead)]
         public Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken token) =>
             _stream.WriteAsync(buffer, offset, count, token);
 
+        [Obsolete(UseGetStreamInstead)]
         public Task<int> ReadAsync(byte[] buffer, int offset, int count) =>
             _stream.ReadAsync(buffer, offset, count);
 
+        [Obsolete(UseGetStreamInstead)]
         public Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken token) =>
             _stream.ReadAsync(buffer, offset, count, token);
+
+        #endregion
 
         private void ConnectServer() {
             if (_serverEndPoint != null)

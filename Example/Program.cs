@@ -17,10 +17,10 @@ namespace Example {
                               .AppendLine();
 
                 var bytes = Encoding.UTF8.GetBytes(requestBuilder.ToString());
-                await tunnelient.WriteAsync(bytes, 0, bytes.Length);
+                await tunnelient.GetStream().WriteAsync(bytes, 0, bytes.Length);
 
                 var buffer = new byte[2048];
-                var bytesRead = await tunnelient.ReadAsync(buffer, 0, buffer.Length);
+                var bytesRead = await tunnelient.GetStream().ReadAsync(buffer, 0, buffer.Length);
                 var responses = Encoding.UTF8.GetString(buffer, 0, bytesRead);
 
                 Console.WriteLine(responses);

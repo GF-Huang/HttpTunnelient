@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HttpTunnelient</name>
+    </assembly>
+    <members>
+        <member name="P:HttpTunnelientDotNet.HttpTunnelient.TCP">
+            <summary>
+            The underlying TcpClient.
+            </summary>
+        </member>
+        <member name="P:HttpTunnelientDotNet.HttpTunnelient.Status">
+            <summary>
+            The status of current instance.
+            </summary>
+        </member>
+        <member name="P:HttpTunnelientDotNet.HttpTunnelient.Credential">
+            <summary>
+            Proxy basic authentication. Default is null.
+            </summary>
+        </member>
+        <member name="P:HttpTunnelientDotNet.HttpTunnelient.UserAgent">
+            <summary>
+            The user-agent field that used for CONNECT request. Default is null.
+            </summary>
+        </member>
+        <member name="P:HttpTunnelientDotNet.HttpTunnelient.KeepAlive">
+            <summary>
+            Get or set the Proxy-Connection field to "keep-alive" or "close". Default is true.
+            </summary>
+        </member>
+        <member name="F:HttpTunnelientDotNet.TunnelStatus.Initial">
+            <summary>
+            Before the tunnel connection initialized.
+            </summary>
+        </member>
+        <member name="F:HttpTunnelientDotNet.TunnelStatus.Connected">
+            <summary>
+            After tunnel connected.
+            </summary>
+        </member>
+        <member name="F:HttpTunnelientDotNet.TunnelStatus.Closed">
+            <summary>
+            Tunnel connection closed, can not reuse.
+            </summary>
+        </member>
+    </members>
+</doc>
