@@ -1,6 +1,9 @@
 # HttpTunnelient
 A http tunnel client.
 
+# NuGet
+https://www.nuget.org/packages/HttpTunnelient/
+
 **Example**:
 
 ```cs
