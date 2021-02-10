@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -73,7 +74,7 @@ namespace HttpTunnelient {
             if (domain is null)
                 throw new ArgumentNullException(nameof(domain));
 
-            await ConnectAsync(domain: domain, address: null, port: port);
+            await ConnectAsync(domain: domain, address: null, port: port).ConfigureAwait(false);
 
             _status = Status.Connected;
         }
@@ -82,7 +83,7 @@ namespace HttpTunnelient {
             if (destAddress is null)
                 throw new ArgumentNullException(nameof(destAddress));
 
-            await ConnectAsync(domain: null, address: destAddress, port: port);
+            await ConnectAsync(domain: null, address: destAddress, port: port).ConfigureAwait(false);
 
             _status = Status.Connected;
         }
@@ -98,9 +99,9 @@ namespace HttpTunnelient {
 
         private async Task ConnectAsync(string? domain, IPAddress? address, int port) {
             if (_serverHost != null)
-                await TcpClient.ConnectAsync(_serverHost, _serverPort);
+                await TcpClient.ConnectAsync(_serverHost, _serverPort).ConfigureAwait(false);
             else
-                await TcpClient.ConnectAsync(_serverAddress, _serverPort);
+                await TcpClient.ConnectAsync(_serverAddress, _serverPort).ConfigureAwait(false);
 
             _stream = TcpClient.GetStream();
 
@@ -109,48 +110,37 @@ namespace HttpTunnelient {
 
             var destination = domain ?? address!.ToString();
 
-            await writer.WriteLineAsync(string.Format(MethodFieldFormat, destination, port));
-            await writer.WriteLineAsync(string.Format(HostFieldFormat, destination, port));
+            await writer.WriteLineAsync(string.Format(MethodFieldFormat, destination, port)).ConfigureAwait(false);
+            await writer.WriteLineAsync(string.Format(HostFieldFormat, destination, port)).ConfigureAwait(false);
 
             if (Credential != null) {
                 var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{Credential.UserName}:{Credential.Password}"));
-                await writer.WriteLineAsync(string.Format(ProxyAuthorizationFieldFormat, authorization));
+                await writer.WriteLineAsync(string.Format(ProxyAuthorizationFieldFormat, authorization)).ConfigureAwait(false);
             }
 
             if (!string.IsNullOrWhiteSpace(UserAgent))
-                await writer.WriteLineAsync(string.Format(UserAgentFieldFormat, UserAgent));
+                await writer.WriteLineAsync(string.Format(UserAgentFieldFormat, UserAgent)).ConfigureAwait(false);
 
-            await writer.WriteLineAsync(string.Format(ProxyConnectionFieldFormat, KeepAlive ? ConnectionKeepAlive : ConnectionClose));
-            await writer.WriteLineAsync();
+            await writer.WriteLineAsync(string.Format(ProxyConnectionFieldFormat, KeepAlive ? ConnectionKeepAlive : ConnectionClose))
+                        .ConfigureAwait(false);
+            await writer.WriteLineAsync().ConfigureAwait(false);
 
-            await writer.FlushAsync();
+            await writer.FlushAsync().ConfigureAwait(false);
 
             // response
-            var response = await reader.ReadLineAsync();
+            var response = await reader.ReadLineAsync().ConfigureAwait(false);
 
             var match = Regex.Match(response, @"HTTP/1\.(?:1|0) (\d{3}) ([\w\s]+)");
             if (match.Success) {
                 if ((HttpStatusCode)Convert.ToInt32(match.Groups[1].Value) != HttpStatusCode.OK) {
                     var code = (HttpStatusCode)Convert.ToInt32(match.Groups[1].Value);
 
-                    throw new HttpsProxyException(code, $"{code:D} {match.Groups[2].Value}.");
+                    throw new HttpRequestException($"{code:D} {match.Groups[2].Value}.");
                 }
 
             } else
                 throw new WebException("Unknown protocol responsed.", WebExceptionStatus.ServerProtocolViolation);
         }
-    }
-
-    [Serializable]
-    public class HttpsProxyException : Exception {
-        public HttpStatusCode StatusCode { get; }
-
-        public HttpsProxyException(HttpStatusCode statusCode) { StatusCode = statusCode; }
-        public HttpsProxyException(HttpStatusCode statusCode, string message) : base(message) { StatusCode = statusCode; }
-        public HttpsProxyException(HttpStatusCode statusCode, string message, Exception inner) : base(message, inner) { StatusCode = statusCode; }
-        protected HttpsProxyException(
-          System.Runtime.Serialization.SerializationInfo info,
-          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 
     enum Status {
