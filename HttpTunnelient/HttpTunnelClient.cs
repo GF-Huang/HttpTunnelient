@@ -46,14 +46,7 @@ namespace HttpTunnelient {
         private Status _status = Status.Initial;
 
         public HttpTunnelClient(string host, int port) {
-            if (host is null)
-                throw new ArgumentNullException(nameof(host));
-
-            if (IPAddress.TryParse(host, out var address))
-                _serverAddress = address;
-            else
-                _serverHost = host;
-
+            _serverHost = host ?? throw new ArgumentNullException(nameof(host));
             _serverPort = port;
         }
 
