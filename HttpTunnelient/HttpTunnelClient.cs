@@ -107,7 +107,7 @@ namespace HttpTunnelient {
             await writer.WriteLineAsync(string.Format(HostFieldFormat, destination, port)).ConfigureAwait(false);
 
             if (Credential != null) {
-                var authorization = Convert.ToBase64String(Encoding.ASCII.GetBytes($"{Credential.UserName}:{Credential.Password}"));
+                var authorization = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{Credential.UserName}:{Credential.Password}"));
                 await writer.WriteLineAsync(string.Format(ProxyAuthorizationFieldFormat, authorization)).ConfigureAwait(false);
             }
 
