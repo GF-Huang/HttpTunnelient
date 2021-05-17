@@ -30,7 +30,7 @@ namespace HttpTunnelient {
 
         private const string MethodFieldFormat = "CONNECT {0}:{1} HTTP/1.1";
         private const string HostFieldFormat = "Host: {0}:{1}";
-        private const string ProxyAuthorizationFieldFormat = "Proxy-Authorization: basic {0}";
+        private const string ProxyAuthorizationFieldFormat = "Proxy-Authorization: Basic {0}";
         private const string UserAgentFieldFormat = "User-Agent: {0}";
         private const string ProxyConnectionFieldFormat = "Proxy-Connection: {0}";
         private const string ConnectionKeepAlive = "keep-alive";
